@@ -1,0 +1,253 @@
+﻿@model List<HotelRapidApi.Models.HotelViewModel.Hotel>
+@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>LuxStay - Lüks Konaklama Deneyimi</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		.hotel-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+		}
+
+		.rating-stars {
+			color: #FFD700;
+		}
+
+		.active-filter {
+			background-color: #3B82F6;
+			color: white;
+		}
+
+		#hotelDetailsModal {
+			transition: all 0.3s ease;
+		}
+
+		.modal-open {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		.modal-closed {
+			opacity: 0;
+			visibility: hidden;
+		}
+	</style>
+</head>
+<body class="bg-gray-50">
+	<!-- Header -->
+	<header class="bg-white shadow-sm">
+		<div class="container mx-auto px-4 py-6 flex justify-between items-center">
+			<div class="flex items-center">
+				<i class="fas fa-hotel text-blue-500 text-3xl mr-2"></i>
+				<h1 class="text-2xl font-bold text-gray-800">LuxStay</h1>
+			</div>
+			<nav class="hidden md:flex space-x-8">
+				<a href="#" class="text-blue-500 font-medium">Ana Sayfa</a>
+				<a href="#" class="text-gray-600 hover:text-blue-500">Otel Ara</a>
+				<a href="#" class="text-gray-600 hover:text-blue-500">Fırsatlar</a>
+				<a href="#" class="text-gray-600 hover:text-blue-500">Yardım</a>
+			</nav>
+			<div class="flex items-center space-x-4">
+				<button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Giriş Yap</button>
+				<button class="md:hidden text-gray-600">
+					<i class="fas fa-bars text-xl"></i>
+				</button>
+			</div>
+		</div>
+	</header>
+
+	<!-- Hero Section -->
+	<section class="bg-blue-600 text-white py-16">
+		<div class="container mx-auto px-4 text-center">
+			<h2 class="text-4xl font-bold mb-4">Hayalinizdeki Tatil İçin Mükemmel Otel</h2>
+			<p class="text-xl mb-8">Binlerce otel arasından bütçenize ve zevkinize uygun konaklama seçeneklerini keşfedin</p>
+		</div>
+	</section>
+
+	<!-- Search Filters -->
+	<section class="container mx-auto px-4 -mt-10">
+		<div class="bg-white rounded-xl shadow-lg p-6">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+				<!-- Şehir Seçimi -->
+				<div class="relative">
+					<label class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+					<select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+						<option selected disabled>Şehir seçin</option>
+						<option>İstanbul</option>
+						<option>Ankara</option>
+						<option>İzmir</option>
+						<option>Antalya</option>
+						<option>Bodrum</option>
+					</select>
+				</div>
+
+				<!-- Tarih Aralığı -->
+				<div class="relative">
+					<label class="block text-sm font-medium text-gray-700 mb-1">Giriş - Çıkış Tarihi</label>
+					<div class="flex items-center border border-gray-300 rounded-lg p-3">
+						<i class="far fa-calendar-alt text-gray-400 mr-2"></i>
+						<span class="text-gray-600">15 Haz - 20 Haz 2023</span>
+					</div>
+				</div>
+
+				<!-- Yetişkin Sayısı -->
+				<div class="relative">
+					<label class="block text-sm font-medium text-gray-700 mb-1">Yetişkin</label>
+					<select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+						<option>1 Yetişkin</option>
+						<option selected>2 Yetişkin</option>
+						<option>3 Yetişkin</option>
+						<option>4 Yetişkin</option>
+					</select>
+				</div>
+
+				<!-- Çocuk Sayısı -->
+				<div class="relative">
+					<label class="block text-sm font-medium text-gray-700 mb-1">Çocuk</label>
+					<select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+						<option selected>0 Çocuk</option>
+						<option>1 Çocuk</option>
+						<option>2 Çocuk</option>
+					</select>
+				</div>
+
+				<!-- Arama Butonu -->
+				<div class="flex items-end">
+					<button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+						Otel Ara
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Results Section -->
+	<section class="container mx-auto px-4 py-12">
+		<div class="flex justify-between items-center mb-8">
+			<h3 class="text-2xl font-bold text-gray-800">Popüler Oteller</h3>
+			<div class="flex space-x-2">
+				<button class="px-4 py-2 border rounded-lg hover:bg-gray-100">Fiyata Göre Sırala</button>
+				<button class="px-4 py-2 border rounded-lg hover:bg-gray-100">Puan</button>
+				<button class="px-4 py-2 border rounded-lg hover:bg-gray-100">Popüler</button>
+			</div>
+		</div>
+
+		<!-- Hotel List -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+			<!-- Hotel Card 1 -->
+			@foreach (var item in Model)
+			{
+				<div class="bg-white rounded-xl shadow-md overflow-hidden hotel-card transition duration-300 cursor-pointer">
+					<div class="relative">
+						@if (item.property.photoUrls != null && item.property.photoUrls.Length > 0)
+						{
+							<img src="@item.property.photoUrls[0]" alt="@item.property.name" class="w-full h-48 object-cover">
+						}
+						else
+						{
+							<div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+								<i class="fas fa-hotel text-gray-400 text-4xl"></i>
+							</div>
+						}
+						<div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full flex items-center">
+							<i class="fas fa-star rating-stars mr-1"></i>
+							<span class="font-medium">@item.property.reviewScore</span>
+						</div>
+					</div>
+					<div class="p-6">
+						<h4 class="text-xl font-bold mb-2">@item.property.name</h4>
+						<p class="text-gray-600 mb-4 flex items-center">
+							<i class="fas fa-map-marker-alt mr-2 text-blue-500"></i> @item.property.wishlistName
+						</p>
+						<div class="flex justify-between items-center">
+							<div>
+								<p class="text-sm text-gray-500">Gece başına</p>
+								<p class="text-xl font-bold text-blue-500">
+									@if (item.property.priceBreakdown?.grossPrice != null)
+									{
+										@item.property.priceBreakdown.grossPrice.value.ToString("N0") @item.property.priceBreakdown.grossPrice.currency
+									}
+									else
+									{
+										<span>Fiyat bilgisi yok</span>
+									}
+								</p>
+							</div>
+							<button onclick="window.location.href='/Hotel/HotelDetail/@item.hotel_id'" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+								Detaylar
+							</button>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</section>
+
+
+	<!-- Footer -->
+	<footer class="bg-gray-800 text-white py-12">
+		<div class="container mx-auto px-4">
+			<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+				<div>
+					<h4 class="text-xl font-bold mb-4 flex items-center">
+						<i class="fas fa-hotel text-blue-400 mr-2"></i> LuxStay
+					</h4>
+					<p class="text-gray-400">Dünyanın dört bir yanındaki en iyi otelleri keşfedin ve unutulmaz bir konaklama deneyimi yaşayın.</p>
+				</div>
+				<div>
+					<h5 class="font-semibold mb-4">Hızlı Linkler</h5>
+					<ul class="space-y-2">
+						<li><a href="#" class="text-gray-400 hover:text-white">Ana Sayfa</a></li>
+						<li><a href="#" class="text-gray-400 hover:text-white">Otel Ara</a></li>
+						<li><a href="#" class="text-gray-400 hover:text-white">Fırsatlar</a></li>
+						<li><a href="#" class="text-gray-400 hover:text-white">Hakkımızda</a></li>
+					</ul>
+				</div>
+				<div>
+					<h5 class="font-semibold mb-4">Destek</h5>
+					<ul class="space-y-2">
+						<li><a href="#" class="text-gray-400 hover:text-white">Yardım Merkezi</a></li>
+						<li><a href="#" class="text-gray-400 hover:text-white">İletişim</a></li>
+						<li><a href="#" class="text-gray-400 hover:text-white">SSS</a></li>
+						<li><a href="#" class="text-gray-400 hover:text-white">Gizlilik Politikası</a></li>
+					</ul>
+				</div>
+				<div>
+					<h5 class="font-semibold mb-4">Bize Ulaşın</h5>
+					<ul class="space-y-2">
+						<li class="flex items-center">
+							<i class="fas fa-phone-alt text-blue-400 mr-2"></i>
+							<span class="text-gray-400">+90 212 123 45 67</span>
+						</li>
+						<li class="flex items-center">
+							<i class="fas fa-envelope text-blue-400 mr-2"></i>
+							<span class="text-gray-400">info@luxstay.com</span>
+						</li>
+						<li class="flex items-center">
+							<i class="fas fa-map-marker-alt text-blue-400 mr-2"></i>
+							<span class="text-gray-400">İstanbul, Türkiye</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+				<p>© 2025 LuxStay. Tüm hakları saklıdır.</p>
+			</div>
+		</div>
+	</footer>
+	<script>
+		function viewHotelDetails(hotelId) {
+			window.location.href = '/Hotel/HotelDetail/' + hotel_id;
+		}
+	</script>
+</body>
+</html>
+
