@@ -27,34 +27,34 @@
 
         public class Property1
         {
-            public bool isPreferred { get; set; }
-            public float latitude { get; set; }
-            public string name { get; set; }
-            public string[] photoUrls { get; set; }
-            public int mainPhotoId { get; set; }
-            public string[] blockIds { get; set; }
-            public string reviewScoreWord { get; set; }
-            public int propertyClass { get; set; }
-            public int id { get; set; }
             public Checkout checkout { get; set; }
-            public bool isFirstPage { get; set; }
-            public int accuratePropertyClass { get; set; }
-            public bool isPreferredPlus { get; set; }
-            public float reviewScore { get; set; }
-            public string countryCode { get; set; }
-            public string checkinDate { get; set; }
-            public int rankingPosition { get; set; }
+            public string wishlistName { get; set; }
+            public string checkoutDate { get; set; }
             public int qualityClass { get; set; }
-            public Pricebreakdown priceBreakdown { get; set; }
+            public int mainPhotoId { get; set; }
+            public string checkinDate { get; set; }
             public Checkin checkin { get; set; }
             public int optOutFromGalleryChanges { get; set; }
-            public int reviewCount { get; set; }
-            public string wishlistName { get; set; }
+            public int accuratePropertyClass { get; set; }
+            public int id { get; set; }
+            public Pricebreakdown priceBreakdown { get; set; }
+            public bool isPreferred { get; set; }
             public int ufi { get; set; }
-            public float longitude { get; set; }
+            public string[] blockIds { get; set; }
+            public bool isFirstPage { get; set; }
+            public string name { get; set; }
+            public float reviewScore { get; set; }
+            public string[] photoUrls { get; set; }
+            public string reviewScoreWord { get; set; }
+            public int rankingPosition { get; set; }
+            public float latitude { get; set; }
+            public string countryCode { get; set; }
+            public int propertyClass { get; set; }
             public int position { get; set; }
             public string currency { get; set; }
-            public string checkoutDate { get; set; }
+            public int reviewCount { get; set; }
+            public float longitude { get; set; }
+            public bool isPreferredPlus { get; set; }
         }
 
         public class Checkout
@@ -63,16 +63,28 @@
             public string untilTime { get; set; }
         }
 
+        public class Checkin
+        {
+            public string untilTime { get; set; }
+            public string fromTime { get; set; }
+        }
+
         public class Pricebreakdown
         {
             public Strikethroughprice strikethroughPrice { get; set; }
+            public Excludedprice excludedPrice { get; set; }
+            public Benefitbadge[] benefitBadges { get; set; }
             public object[] taxExceptions { get; set; }
             public Grossprice grossPrice { get; set; }
-            public Benefitbadge[] benefitBadges { get; set; }
-            public Excludedprice excludedPrice { get; set; }
         }
 
         public class Strikethroughprice
+        {
+            public string currency { get; set; }
+            public float value { get; set; }
+        }
+
+        public class Excludedprice
         {
             public string currency { get; set; }
             public float value { get; set; }
@@ -84,24 +96,12 @@
             public string currency { get; set; }
         }
 
-        public class Excludedprice
-        {
-            public float value { get; set; }
-            public string currency { get; set; }
-        }
-
         public class Benefitbadge
         {
             public string identifier { get; set; }
             public string text { get; set; }
-            public string explanation { get; set; }
             public string variant { get; set; }
-        }
-
-        public class Checkin
-        {
-            public string fromTime { get; set; }
-            public string untilTime { get; set; }
+            public string explanation { get; set; }
         }
 
         public class Meta
@@ -123,8 +123,8 @@
 
         public class Props
         {
-            public Content content { get; set; }
             public bool fill { get; set; }
+            public Content content { get; set; }
             public string text { get; set; }
             public string title { get; set; }
         }
@@ -159,10 +159,10 @@
         {
             public string spacing { get; set; }
             public Item1[] items { get; set; }
+            public string icon { get; set; }
+            public string variant { get; set; }
             public string accessibilityLabel { get; set; }
             public string tertiaryTintedColor { get; set; }
-            public string variant { get; set; }
-            public string icon { get; set; }
         }
 
         public class Item1
@@ -177,8 +177,8 @@
 
         public class Text
         {
-            public string text { get; set; }
             public string font { get; set; }
+            public string text { get; set; }
             public string color { get; set; }
             public Linkaction[] linkActions { get; set; }
         }
@@ -195,3 +195,5 @@
 
     }
 }
+
+

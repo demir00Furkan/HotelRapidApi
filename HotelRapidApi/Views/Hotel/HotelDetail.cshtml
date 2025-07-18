@@ -1,306 +1,144 @@
-﻿@model HotelRapidApi.Models.HotelViewModel.Hotel
+﻿@model HotelRapidApi.Models.HotelPageViewModel
 @{
-	Layout = null;
+    Layout = null;
+    var hotel = Model.HotelDetail;
+    var photos = Model.HotelPhotos ?? new List<HotelRapidApi.Models.HotelPhotoViewModel.Datum>();
+    var roomRec = hotel?.room_recommendation != null && hotel.room_recommendation.Length > 0 ? hotel.room_recommendation[0] : null;
+    var infoCodes = hotel?.hotel_important_information_with_codes ?? new HotelRapidApi.Models.HotelDetailViewModel.Hotel_Important_Information_With_Codes[0];
 }
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Otel Detayları - LuxStay</title>
-	<script src="https://cdn.tailwindcss.com"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-	<style>
-		.gallery-image {
-			transition: all 0.3s ease;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@(hotel?.hotel_name ?? "Otel Detayları") - LuxStay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gallery-image {
+            transition: all 0.3s ease;
+        }
 
-			.gallery-image:hover {
-				transform: scale(1.03);
-			}
+            .gallery-image:hover {
+                transform: scale(1.03);
+            }
 
-		.amenity-icon {
-			width: 24px;
-			height: 24px;
-			margin-right: 8px;
-			color: #3B82F6;
-		}
-	</style>
+        .amenity-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            color: #3B82F6;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
-	<!-- Header -->
-	<header class="bg-white shadow-sm">
-		<div class="container mx-auto px-4 py-6 flex justify-between items-center">
-			<div class="flex items-center">
-				<i class="fas fa-hotel text-blue-500 text-3xl mr-2"></i>
-				<h1 class="text-2xl font-bold text-gray-800">LuxStay</h1>
-			</div>
-			<nav class="hidden md:flex space-x-8">
-				<a href="#" class="text-gray-600 hover:text-blue-500">Ana Sayfa</a>
-				<a href="#" class="text-gray-600 hover:text-blue-500">Otel Ara</a>
-				<a href="#" class="text-gray-600 hover:text-blue-500">Fırsatlar</a>
-			</nav>
-			<div class="flex items-center space-x-4">
-				<button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Giriş Yap</button>
-			</div>
-		</div>
-	</header>
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-hotel text-blue-500 text-3xl mr-2"></i>
+                <h1 class="text-2xl font-bold text-gray-800">LuxStay</h1>
+            </div>
+        </div>
+    </header>
 
-	<!-- Hotel Details Section -->
-	<section class="container mx-auto px-4 py-12">
-		<div class="bg-white rounded-xl shadow-lg overflow-hidden">
-			<!-- Hotel Gallery -->
-			<div class="grid grid-cols-1 lg:grid-cols-4 gap-1">
-				<div class="lg:col-span-2 row-span-2">
-					<img src="@Model.property.photoUrls[0]"
-						 alt="Otel Görseli" class="w-full h-full object-cover gallery-image">
-				</div>
-				<div class="lg:col-span-1">
-					<img src="@Model.property.photoUrls[1]"
-						 alt="Otel Görseli" class="w-full h-full object-cover gallery-image">
-				</div>
-				<div class="lg:col-span-1">
-					<img src="@Model.property.photoUrls[2]"
-						 alt="Otel Görseli" class="w-full h-full object-cover gallery-image">
-				</div>
+    <section class="container mx-auto px-4 py-12">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Hotel Gallery -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-1">
+                @if (photos.Count > 0)
+                {
+                    <div class="lg:col-span-2 row-span-2">
+                        <img src="@photos[0].url" alt="Otel Görseli" class="w-full h-full object-cover gallery-image">
+                    </div>
+                }
+                @for (int i = 1; i < Math.Min(5, photos.Count); i++)
+                {
+                    <div class="lg:col-span-1">
+                        <img src="@photos[i].url" alt="Otel Görseli" class="w-full h-full object-cover gallery-image">
+                    </div>
+                }
+            </div>
 
-			</div>
+            <!-- Hotel Info -->
+            <div class="p-8">
+                <div class="flex flex-col md:flex-row justify-between items-start mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">@hotel?.hotel_name</h2>
+                        <div class="flex items-center text-gray-600 mb-4">
+                            <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
+                            <span>@hotel?.address</span>
+                            @if (!string.IsNullOrEmpty(hotel?.city_name_en))
+                            {
+                                <span class="mx-2">•</span>
+                                <span>@hotel.city_name_en</span>
+                            }
+                            @if (hotel?.rawData?.reviewScore > 0)
+                            {
+                                <span class="mx-2">•</span>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star rating-stars mr-1 text-yellow-400"></i>
+                                    <span class="font-medium">@hotel.rawData.reviewScore "@hotel.rawData.reviewScoreWord"</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Herşey Dahil Gece başına</p>
+                        <p class="text-3xl font-bold text-blue-500">
+                            @(hotel?.product_price_breakdown?.gross_amount_per_night?.amount_rounded ?? "-")
+                            @(hotel?.product_price_breakdown?.gross_amount_per_night?.currency)
+                        </p>
+                        <br /><br /><br />
+                        <p class="text-sm text-gray-500">
+                            @(roomRec?.adults ?? 1) Yetişkin,
+                            @(roomRec?.children ?? 0) Çocuk,
+                            @(hotel?.product_price_breakdown?.nr_stays ?? 1) Gece
+                            <br />
+                            Toplam: @(hotel?.product_price_breakdown?.net_amount?.amount_rounded ?? "-")
+                        </p>
+                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg">
+                            Rezervasyonu Gerçekleştir
+                        </button>
+                    </div>
+                </div>
 
-			<!-- Hotel Info -->
-			<div class="p-8">
-				<div class="flex justify-between items-start mb-6">
-					<div>
-						<h2 class="text-3xl font-bold mb-2">@Model.property.name</h2>
-						<div class="flex items-center text-gray-600 mb-4">
-							<i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
-							<span>@Model.property.wishlistName</span>
-							<span class="mx-2">•</span>
-							<div class="flex items-center">
-								<i class="fas fa-star rating-stars mr-1"></i>
-								<span class="font-medium">@Model.property.reviewScore</span>
-								<span class="ml-1">@Model.property.reviewScoreWord</span>
-							</div>
-						</div>
-					</div>
-					<div class="text-right">
-						<p class="text-sm text-gray-500">Gece başına</p>
-						<p class="text-3xl font-bold text-blue-500"> @Model.property.priceBreakdown.grossPrice.currency @((int)Math.Round(Model.property.priceBreakdown.grossPrice.value))</p>
-						<p class="text-sm text-gray-500">Herşey Dahil Fiyat</p>
-					</div>
-				</div>
-				
-				<!-- Hotel Description -->
-				<div class="mb-8">
-					<h3 class="text-xl font-semibold mb-4">Otel Hakkında</h3>
-					<p class="text-gray-700 leading-relaxed">
-						@Model.accessibilityLabel 
-					</p>
-				</div>
+                <!-- Hotel Description -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Otel Hakkında</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        @Model.HotelDetail.hotel_important_information_with_codes[0].phrase <br /> @Model.HotelDetail.hotel_important_information_with_codes[1].phrase <br />@Model.HotelDetail.hotel_important_information_with_codes[2].phrase
+                    </p>
+                </div>
 
-				<!-- Amenities -->
-				<div class="mb-8">
-					<h3 class="text-xl font-semibold mb-4">Olanaklar</h3>
-					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-						<div class="flex items-center">
-							<i class="fas fa-wifi amenity-icon"></i>
-							<span>Ücretsiz WiFi</span>
-						</div>
-						<div class="flex items-center">
-							<i class="fas fa-swimming-pool amenity-icon"></i>
-							<span>Açık Havuz</span>
-						</div>
-						<div class="flex items-center">
-							<i class="fas fa-spa amenity-icon"></i>
-							<span>Spa Merkezi</span>
-						</div>
-						<div class="flex items-center">
-							<i class="fas fa-dumbbell amenity-icon"></i>
-							<span>Fitness Merkezi</span>
-						</div>
-						<div class="flex items-center">
-							<i class="fas fa-utensils amenity-icon"></i>
-							<span>Restoran</span>
-						</div>
-						<div class="flex items-center">
-							<i class="fas fa-parking amenity-icon"></i>
-							<span>Ücretsiz Otopark</span>
-						</div>
-					</div>
-				</div>
+                <!-- Google Maps -->
+                @if (hotel?.rawData?.latitude != 0 && hotel?.rawData?.longitude != 0)
+                {
+                    <div style="width: 100%">
+                        <iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                                src="https://maps.google.com/maps?q=@hotel.rawData.latitude,@hotel.rawData.longitude&amp;z=15&amp;output=embed">
+                        </iframe>
+                    </div>
+                }
 
-				<!-- Room Types -->
-				<div class="mb-8">
-					<h3 class="text-xl font-semibold mb-6">Oda Tipleri</h3>
-					<div class="space-y-6">
-						<!-- Room 1 -->
-						<div class="border rounded-xl p-6 hover:shadow-md transition">
-							<div class="flex flex-col md:flex-row justify-between">
-								<div class="mb-4 md:mb-0">
-									<h4 class="text-lg font-bold mb-2">Standart Oda</h4>
-									<p class="text-gray-600 mb-2">2 Yetişkin • 1 Çocuk</p>
-									<div class="flex items-center text-sm text-gray-500">
-										<i class="fas fa-coffee mr-2"></i>
-										<span>Kahvaltı Dahil</span>
-									</div>
-								</div>
-								<div class="flex flex-col items-end">
-									<p class="text-2xl font-bold text-blue-500">
-										@((int)Math.Round(Model.property.priceBreakdown.grossPrice.value * 2.5)) @Model.property.priceBreakdown.grossPrice.currency
-									</p>
-									<p class="text-sm text-gray-500 mb-2">gece başına</p>
-									<button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Rezervasyon Yap</button>
-								</div>
-							</div>
-						</div>
-
-						<!-- Room 2 -->
-						<div class="border rounded-xl p-6 hover:shadow-md transition">
-							<div class="flex flex-col md:flex-row justify-between">
-								<div class="mb-4 md:mb-0">
-									<h4 class="text-lg font-bold mb-2">Deluxe Oda</h4>
-									<p class="text-gray-600 mb-2">2 Yetişkin • 2 Çocuk</p>
-									<div class="flex items-center text-sm text-gray-500">
-										<i class="fas fa-coffee mr-2"></i>
-										<span>Kahvaltı Dahil</span>
-										<i class="fas fa-utensils ml-4 mr-2"></i>
-										<span>Akşam Yemeği Dahil</span>
-									</div>
-								</div>
-								<div class="flex flex-col items-end">
-									<p class="text-2xl font-bold text-blue-500">@(Model.property.priceBreakdown.grossPrice.value * 3) @Model.property.priceBreakdown.grossPrice.currency</p>
-									<p class="text-sm text-gray-500 mb-2">gece başına</p>
-									<button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Rezervasyon Yap</button>
-								</div>
-							</div>
-						</div>
-
-						<!-- Room 3 -->
-						<div class="border rounded-xl p-6 hover:shadow-md transition">
-							<div class="flex flex-col md:flex-row justify-between">
-								<div class="mb-4 md:mb-0">
-									<h4 class="text-lg font-bold mb-2">Suit Oda</h4>
-									<p class="text-gray-600 mb-2">4 Yetişkin • 2 Çocuk</p>
-									<div class="flex items-center text-sm text-gray-500">
-										<i class="fas fa-coffee mr-2"></i>
-										<span>Kahvaltı Dahil</span>
-										<i class="fas fa-utensils ml-4 mr-2"></i>
-										<span>Tam Pansiyon</span>
-									</div>
-								</div>
-								<div class="flex flex-col items-end">
-									<p class="text-2xl font-bold text-blue-500"> @((int)Math.Round(Model.property.priceBreakdown.grossPrice.value*5)) @Model.property.priceBreakdown.grossPrice.currency</p>
-									<p class="text-sm text-gray-500 mb-2">gece başına</p>
-									<button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Rezervasyon Yap</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Location -->
-				<div class="mb-8">
-					<h3 class="text-xl font-semibold mb-4">Konum</h3>
-					<div class="h-96 bg-gray-200 rounded-xl overflow-hidden">
-						<!-- Map Placeholder -->
-						<div class="w-full h-full flex items-center justify-center bg-gray-300">
-							<i class="fas fa-map-marked-alt text-4xl text-gray-500"></i>
-						</div>
-					</div>
-					<p class="mt-4 text-gray-600">
-						<i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
-						@Model.property.wishlistName
-					</p>
-				</div>
-
-				<!-- Reviews -->
-				<div>
-					<h3 class="text-xl font-semibold mb-6">Müşteri Yorumları</h3>
-					<div class="space-y-6">
-						<!-- Review 1 -->
-						<div class="border-b pb-6">
-							<div class="flex justify-between mb-2">
-								<div>
-									<p class="font-semibold">Ahmet Y.</p>
-									<div class="flex items-center text-sm text-gray-500">
-										<i class="fas fa-star rating-stars mr-1"></i>
-										<span>4.5</span>
-										<span class="mx-1">•</span>
-										<span>15 Haziran 2023</span>
-									</div>
-								</div>
-							</div>
-							<p class="text-gray-700">
-								Harika bir konaklama deneyimi yaşadık. Personel çok ilgili ve yardımseverdi. Odalar temiz ve ferah. Kesinlikle tekrar geleceğiz.
-							</p>
-						</div>
-
-						<!-- Review 2 -->
-						<div class="border-b pb-6">
-							<div class="flex justify-between mb-2">
-								<div>
-									<p class="font-semibold">Ayşe K.</p>
-									<div class="flex items-center text-sm text-gray-500">
-										<i class="fas fa-star rating-stars mr-1"></i>
-										<span>5.0</span>
-										<span class="mx-1">•</span>
-										<span>3 Mayıs 2023</span>
-									</div>
-								</div>
-							</div>
-							<p class="text-gray-700">
-								Manzarası muhteşem, kahvaltı çeşitliliği çok iyi. Spa merkezini mutlaka deneyin. Şehir merkezine yakın olması da büyük avantaj.
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- Footer -->
-	<footer class="bg-gray-800 text-white py-12">
-		<div class="container mx-auto px-4">
-			<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-				<div>
-					<h4 class="text-xl font-bold mb-4 flex items-center">
-						<i class="fas fa-hotel text-blue-400 mr-2"></i> LuxStay
-					</h4>
-					<p class="text-gray-400">Dünyanın dört bir yanındaki en iyi otelleri keşfedin ve unutulmaz bir konaklama deneyimi yaşayın.</p>
-				</div>
-				<div>
-					<h5 class="font-semibold mb-4">Hızlı Linkler</h5>
-					<ul class="space-y-2">
-						<li><a href="#" class="text-gray-400 hover:text-white">Ana Sayfa</a></li>
-						<li><a href="#" class="text-gray-400 hover:text-white">Otel Ara</a></li>
-						<li><a href="#" class="text-gray-400 hover:text-white">Fırsatlar</a></li>
-					</ul>
-				</div>
-				<div>
-					<h5 class="font-semibold mb-4">Destek</h5>
-					<ul class="space-y-2">
-						<li><a href="#" class="text-gray-400 hover:text-white">Yardım Merkezi</a></li>
-						<li><a href="#" class="text-gray-400 hover:text-white">İletişim</a></li>
-						<li><a href="#" class="text-gray-400 hover:text-white">SSS</a></li>
-					</ul>
-				</div>
-				<div>
-					<h5 class="font-semibold mb-4">Bize Ulaşın</h5>
-					<ul class="space-y-2">
-						<li class="flex items-center">
-							<i class="fas fa-phone-alt text-blue-400 mr-2"></i>
-							<span class="text-gray-400">+90 212 123 45 67</span>
-						</li>
-						<li class="flex items-center">
-							<i class="fas fa-envelope text-blue-400 mr-2"></i>
-							<span class="text-gray-400">info@luxstay.com</span>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-				<p>© 2023 LuxStay. Tüm hakları saklıdır.</p>
-			</div>
-		</div>
-	</footer>
+                <!-- Amenities -->
+                @if (hotel?.facilities_block?.facilities != null && hotel.facilities_block.facilities.Length > 0)
+                {
+                    <div class="mt-8">
+                        <h3 class="text-xl font-semibold mb-4">Olanaklar</h3>
+                        <div class="flex flex-wrap gap-4">
+                            @foreach (var facility in hotel.facilities_block.facilities)
+                            {
+                                <div class="flex items-center bg-blue-50 px-3 py-2 rounded-lg shadow-sm">
+                                    <i class="fas fa-check amenity-icon"></i>
+                                    <span>@facility.name</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
 </body>
 </html>
