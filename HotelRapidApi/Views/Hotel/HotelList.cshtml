@@ -4,127 +4,453 @@
 }
 
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>LuxStay - Lüks Konaklama Deneyimi</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hotel Booking - Find Your Perfect Stay</title>
 	<script src="https://cdn.tailwindcss.com"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		.hotel-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+		}
+
+		.amenity-icon {
+			transition: all 0.3s ease;
+		}
+
+			.amenity-icon:hover {
+				transform: scale(1.2);
+			}
+
+		.rating-stars {
+			color: #fbbf24;
+		}
+
+		.gallery-image {
+			transition: all 0.3s ease;
+			cursor: pointer;
+		}
+
+			.gallery-image:hover {
+				transform: scale(1.03);
+			}
+
+		.gradient-bg {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		}
+
+		.glass-effect {
+			background: rgba(255, 255, 255, 0.1);
+			backdrop-filter: blur(10px);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+		}
+	</style>
 </head>
-<body class="bg-gray-50">
-	<header class="bg-white shadow-sm">
-		<div class="container mx-auto px-4 py-6 flex justify-between items-center">
-			<h1 class="text-2xl font-bold text-gray-800">LuxStay</h1>
+<body class="bg-gray-50 font-sans">
+	<!-- Navigation -->
+	<nav class="bg-white shadow-lg sticky top-0 z-50">
+		<div class="container mx-auto px-4 py-4 flex justify-between items-center">
+			<div class="text-2xl font-bold gradient-bg bg-clip-text text-transparent">
+				<i class="fas fa-hotel mr-2"></i>LuxStay
+			</div>
+			<div class="hidden md:flex space-x-8">
+				<a href="#" class="text-indigo-700 font-medium border-b-2 border-indigo-700 pb-1">Ana Sayfa</a>
+				<a href="#" class="text-gray-600 hover:text-indigo-700 transition duration-300">Oteller</a>
+				<a href="#" class="text-gray-600 hover:text-indigo-700 transition duration-300">Yerler</a>
+				<a href="#" class="text-gray-600 hover:text-indigo-700 transition duration-300">Fırsatlar</a>
+				<a href="#" class="text-gray-600 hover:text-indigo-700 transition duration-300">İletişim</a>
+			</div>
+			<div class="flex items-center space-x-4">
+				<button class="px-4 py-2 text-indigo-700 hover:bg-indigo-50 rounded-lg transition duration-300">
+					<i class="fas fa-user"></i>
+				</button>
+				<button class="md:hidden text-gray-600">
+					<i class="fas fa-bars"></i>
+				</button>
+			</div>
 		</div>
-	</header>
+	</nav>
 
-	<section class="bg-blue-600 text-white py-16">
+	<!-- Hero Section -->
+
+	<div class="gradient-bg text-white py-16">
 		<div class="container mx-auto px-4 text-center">
-			<h2 class="text-4xl font-bold mb-4">Hayalinizdeki Tatil İçin Mükemmel Otel</h2>
+			<h1 class="text-5xl font-bold mb-4">Mükemmel Konaklamanızı Keşfedin</h1>
+			<p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+				Türkiye'nin en prestijli adreslerinde, seçkin misafirlerimiz için özel olarak küratörlüğünü yaptığımız lüks konaklama deneyimlerini sunuyoruz.
+			</p>
+			<form asp-controller="Hotel" asp-action="HotelList" method="post">
+				<div class="glass-effect rounded-2xl p-6 max-w-4xl mx-auto">
+					<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+						<div>
+							<label class="block text-sm font-medium mb-2">Şehir</label>
+							<select name="city" class="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-white" required>
+								<option selected disabled>Şehir Seçin</option>
+								<option value="istanbul">Istanbul</option>
+								<option value="ankara">Ankara</option>
+								<option value="izmir">Izmir</option>
+								<option value="antalya">Antalya</option>
+								<option value="bodrum">Bodrum</option>
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm font-medium mb-2">Varış Tarihi</label>
+							<input type="date" name="dateIn" class="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-white" required value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")">
+						</div>
+						<div>
+							<label class="block text-sm font-medium mb-2">Ayrılış Tarihi</label>
+							<input type="date" name="dateOut" class="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-white" required>
+						</div>
+						<div>
+							<label class="block text-sm font-medium mb-2">Yetişkin</label>
+							<select name="guest" class="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-white" required>
+								<option value="1">1 Yetişkin</option>
+								<option value="2" selected>2 Yetişkin</option>
+								<option value="3">3 Yetişkin</option>
+								<option value="4">4 Yetişkin</option>
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm font-medium mb-2">Çocuk</label>
+							<select name="children" class="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-white" required>
+								<option value="0" selected>0 Children</option>
+								<option value="1">1 Çocuk</option>
+								<option value="2">2 Çocuk</option>
+								<option value="3">3 Çocuk</option>
+								<option value="4">4 Çocuk</option>
+							</select>
+						</div>
+					</div>
+					<button type="submit" class="mt-4 w-full bg-white text-indigo-700 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">
+						<i class="fas fa-search mr-2"></i> Otel Ara
+					</button>
+				</div>
+			</form>
 		</div>
-	</section>
+	</div>
 
-	<form asp-controller="Hotel" asp-action="HotelList" method="post">
-		<section class="container mx-auto px-4 -mt-10">
-			<div class="bg-white rounded-xl shadow-lg p-6">
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-					<div>
-						<label>Şehir</label>
-						<select name="city" class="w-full p-3 border border-gray-300 rounded-lg" required>
-							<option selected disabled>Şehir seçin</option>
-							<option>istanbul</option>
-							<option>ankara</option>
-							<option>izmir</option>
-							<option>antalya</option>
-							<option>bodrum</option>
-						</select>
+	<!-- Featured Destinations -->
+	<div class="py-16 bg-white">
+		<div class="container mx-auto px-4">
+			<h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Popüler Yerler</h2>
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+				<div class="relative rounded-2xl overflow-hidden h-48 group cursor-pointer">
+					<img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+						 class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+					<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+					<div class="absolute bottom-4 left-4 right-4">
+						<h3 class="text-white font-bold text-lg">Dağ Tatil Köyleri</h3>
+						<p class="text-white/80 text-sm">Alp Maceraları</p>
 					</div>
-					<div>
-						<label>Giriş Tarihi</label>
-						<input type="date" name="dateIn" class="w-full p-3 border border-gray-300 rounded-lg" required value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+				</div>
+				<div class="relative rounded-2xl overflow-hidden h-48 group cursor-pointer">
+					<img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+						 class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+					<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+					<div class="absolute bottom-4 left-4 right-4">
+						<h3 class="text-white font-bold text-lg">Sahil Otelleri</h3>
+						<p class="text-white/80 text-sm">Okyanus Manzarası </p>
 					</div>
-					<div>
-						<label>Çıkış Tarihi</label>
-						<input type="date" name="dateOut" class="w-full p-3 border border-gray-300 rounded-lg" required />
+				</div>
+				<div class="relative rounded-2xl overflow-hidden h-48 group cursor-pointer">
+					<img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-4.0.3&auto=format&fit=crop&w=1368&q=80"
+						 class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+					<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+					<div class="absolute bottom-4 left-4 right-4">
+						<h3 class="text-white font-bold text-lg">Şehir Tatilleri</h3>
+						<p class="text-white/80 text-sm"> Kentsel Lüks</p>
 					</div>
-					<div>
-						<label>Yetişkin</label>
-						<select name="guest" class="w-full p-3 border border-gray-300 rounded-lg" required>
-							<option value="1">1 Yetişkin</option>
-							<option value="2" selected>2 Yetişkin</option>
-							<option value="3">3 Yetişkin</option>
-							<option value="4">4 Yetişkin</option>
-						</select>
+				</div>
+				<div class="relative rounded-2xl overflow-hidden h-48 group cursor-pointer">
+					<img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+						 class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+					<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+					<div class="absolute bottom-4 left-4 right-4">
+						<h3 class="text-white font-bold text-lg">Lüks Konaklamalar</h3>
+						<p class="text-white/80 text-sm">Premium Deneyim</p>
 					</div>
-					<div>
-						<label>Çocuk</label>
-						<select name="children" class="w-full p-3 border border-gray-300 rounded-lg" required>
-							<option value="0" selected>0 Çocuk</option>
-							<option value="1">1 Çocuk</option>
-							<option value="2">2 Çocuk</option>
-							<option value="3">3 Çocuk</option>
-							<option value="4">4 Çocuk</option>
-						</select>
-					</div>
-					<div class="flex items-end">
-						<button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg">
-							Otel Ara
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Hotel List Section -->
+	<div class="container mx-auto px-4 py-16">
+		<div class="flex flex-col lg:flex-row gap-8">
+			<!-- Search Filters -->
+			<div class="lg:w-1/4">
+				<div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+					<h2 class="text-xl font-bold mb-6 text-gray-800 flex items-center">
+						<i class="fas fa-filter mr-2 text-indigo-600"></i>Filtreler
+					</h2>
+
+					<div class="space-y-6">
+						<div>
+							<label class="block text-gray-700 font-medium mb-3">Fiyat Aralığı</label>
+							<input type="range" min="50" max="500" value="250" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+							<div class="flex justify-between text-sm text-gray-600 mt-2">
+								<span>$250</span>
+								<span class="font-semibold text-indigo-600">$500</span>
+								<span>$1000</span>
+							</div>
+						</div>
+
+						<div>
+							<label class="block text-gray-700 font-medium mb-3">Yıldız Sayısı</label>
+							<div class="space-y-2">
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<div class="rating-stars">
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+									</div>
+									<span class="ml-2 text-gray-700">5 Yıldız</span>
+								</label>
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<div class="rating-stars">
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+										<i class="far fa-star"></i>
+									</div>
+									<span class="ml-2 text-gray-700">4+ Yıldız</span>
+								</label>
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<div class="rating-stars">
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+										<i class="fas fa-star"></i>
+										<i class="far fa-star"></i>
+										<i class="far fa-star"></i>
+									</div>
+									<span class="ml-2 text-gray-700">3+ Yıldız</span>
+								</label>
+							</div>
+						</div>
+
+						<div>
+							<label class="block text-gray-700 font-medium mb-3">Olanaklar</label>
+							<div class="space-y-2">
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<span class="text-gray-700">Ücretsiz WiFi</span>
+								</label>
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<span class="text-gray-700">Yüzme Havuzu</span>
+								</label>
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<span class="text-gray-700">Spa & Wellness</span>
+								</label>
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<span class="text-gray-700">Ücretsiz Otopark</span>
+								</label>
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<span class="text-gray-700">Restoran</span>
+								</label>
+								<label class="flex items-center cursor-pointer">
+									<input type="checkbox" class="rounded text-indigo-600 mr-3">
+									<span class="text-gray-700">Spor Salonu</span>
+								</label>
+							</div>
+						</div>
+
+						<button class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-300">
+							Filtreleri Uygula
 						</button>
 					</div>
 				</div>
 			</div>
-		</section>
-	</form>
 
-	<section class="container mx-auto px-4 py-12">
-		<h3 class="text-2xl font-bold text-gray-800 mb-8">Sonuçlar</h3>
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			@foreach (var item in Model)
-			{
-				<div class="bg-white rounded-xl shadow-md overflow-hidden hotel-card transition duration-300 cursor-pointer">
-					<div class="relative">
-						@if (item.property.photoUrls != null && item.property.photoUrls.Length > 0)
-						{
-							<img src="@item.property.photoUrls[0]" alt="@item.property.name" class="w-full h-48 object-cover">
-						}
-						else
-						{
-							<div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-								<i class="fas fa-hotel text-gray-400 text-4xl"></i>
-							</div>
-						}
-						<div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full flex items-center">
-							<i class="fas fa-star rating-stars mr-1 text-yellow-400"></i>
-							<span class="font-medium">@item.property.reviewScore</span>
-						</div>
-					</div>
-					<div class="p-6">
-						<h4 class="text-xl font-bold mb-2">@item.property.name</h4>
-						<p class="text-gray-600 mb-4 flex items-center">
-							<i class="fas fa-map-marker-alt mr-2 text-blue-500"></i> @item.property.wishlistName
-						</p>
-						<div class="flex justify-between items-center">
-							<div>
-								<p class="text-sm text-gray-500">Gece başına</p>
-								<p class="text-xl font-bold text-blue-500">
-									@if (item.property.priceBreakdown?.grossPrice != null)
-									{
-										@item.property.priceBreakdown.grossPrice.value.ToString("N0") @item.property.priceBreakdown.grossPrice.currency
-									}
-									else
-									{
-										<span>Fiyat bilgisi yok</span>
-									}
-								</p>
-							</div>
-							<a asp-controller="Hotel" asp-action="HotelDetail" asp-route-id="@item.hotel_id" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-								Detaylar
-							</a>
-						</div>
+			<!-- Hotel List -->
+			<div class="lg:w-3/4">
+				<div class="flex justify-between items-center mb-8">
+					<h2 class="text-2xl font-bold text-gray-800">@Model.Count() Otel Bulundu</h2>
+					<div class="flex items-center space-x-4">
+						<span class="text-gray-600">Göre Sırala :</span>
+						<select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+							<option>Varsayılan</option>
+							<option>Fiyat: Düşükten Yükseğe</option>
+							<option>Fiyat: Yüksekten Düşüğe</option>
+							<option>Derecelendirme:Yüksekten Düşüğe </option>
+						</select>
 					</div>
 				</div>
-			}
+
+				<!-- Hotel Cards -->
+				<div class="space-y-6">
+					<!-- Hotel 3 -->
+					@foreach (var item in Model)
+					{
+						<div class="hotel-card bg-white rounded-2xl shadow-lg overflow-hidden transition duration-300 cursor-pointer">
+							<div class="md:flex">
+								<div class="md:w-1/3 relative">
+									<img src="@item.property.photoUrls[0]"
+										 alt="Mountain Lodge" class="w-full h-64 md:h-full object-cover">
+									<div class="absolute top-4 left-4 bg-white px-3 py-1 rounded-full text-sm font-semibold text-indigo-700 shadow-lg">
+										<i class="fas fa-bolt mr-1"></i> Popular
+									</div>
+									<div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-gray-700">
+										<i class="fas fa-heart text-red-500 mr-1"></i>
+									</div>
+								</div>
+								<div class="p-6 md:w-2/3">
+									<div class="flex justify-between items-start">
+										<div class="flex-1">
+											<h3 class="text-xl font-bold text-gray-800 mb-2">@item.property.name</h3>
+											<div class="flex items-center mb-2">
+												<div class="rating-stars">
+													<i class="fas fa-star"></i>
+													<i class="fas fa-star"></i>
+													<i class="fas fa-star"></i>
+													<i class="fas fa-star"></i>
+													<i class="fas fa-star"></i>
+												</div>
+												<span class="ml-2 text-gray-600">@item.property.reviewScore (@item.property.reviewCount Görüntüleme)</span>
+												<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">@item.property.reviewScoreWord</span>
+											</div>
+											<div class="flex items-center text-gray-600 mb-4">
+												<i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>
+												<span>@item.property.wishlistName</span>
+											</div>
+										</div>
+										<div class="text-right ml-4">
+											<div class="text-3xl font-bold text-indigo-700"> @item.property.priceBreakdown.grossPrice.currency @item.property.priceBreakdown.grossPrice.value</div>
+											@{
+
+												var checkin = DateTime.Parse(item.property.checkinDate);
+												var checkout = DateTime.Parse(item.property.checkoutDate);
+
+
+												var days = (checkout - checkin).Days;
+											}
+											
+											<div class="text-sm text-gray-600">@days Gecelik</div>
+										</div>
+									</div>
+
+									<div class="flex flex-wrap gap-2 mb-4">
+										<span class="px-3 py-1 bg-gray-100 rounded-full text-sm flex items-center">
+											<i class="fas fa-fireplace text-indigo-600 mr-1"></i> Fireplace
+										</span>
+										<span class="px-3 py-1 bg-gray-100 rounded-full text-sm flex items-center">
+											<i class="fas fa-hot-tub text-indigo-600 mr-1"></i> Hot Tub
+										</span>
+										<span class="px-3 py-1 bg-gray-100 rounded-full text-sm flex items-center">
+											<i class="fas fa-skiing text-indigo-600 mr-1"></i> Ski-in/Ski-out
+										</span>
+										<span class="px-3 py-1 bg-gray-100 rounded-full text-sm flex items-center">
+											<i class="fas fa-utensils text-indigo-600 mr-1"></i> Restaurant
+										</span>
+									</div>
+
+									<div class="flex justify-between items-center">
+										<a asp-controller="Hotel" asp-action="HotelDetail"
+										   asp-route-id="@item.hotel_id"
+										   asp-route-dateIn="@Context.Request.Form["dateIn"]"
+										   asp-route-dateOut="@Context.Request.Form["dateOut"]"
+										   asp-route-guest="@Context.Request.Form["guest"]"
+										   asp-route-children="@Context.Request.Form["children"]"
+										   class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+											Detaylar
+										</a>
+
+										<div class="text-green-600 font-medium flex items-center">
+											<i class="fas fa-check-circle mr-1"></i> Ücretsiz İptal
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					}
+
+				</div>
+
+			</div>
 		</div>
-	</section>
+	</div>
+
+	<!-- Footer -->
+	<footer class="bg-gray-900 text-white py-12">
+		<div class="container mx-auto px-4">
+			<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+				<div>
+					<h3 class="text-xl font-bold mb-4">LuxStay</h3>
+					<p class="text-gray-400">Dünya çapında lüks konaklama için güvenilir ortağınız.</p>
+				</div>
+				<div>
+					<h4 class="font-semibold mb-4">Hızlı Bağlantılar</h4>
+					<ul class="space-y-2 text-gray-400">
+						<li><a href="#" class="hover:text-white transition duration-300">Hakkımızda</a></li>
+						<li><a href="#" class="hover:text-white transition duration-300">İletişim</a></li>
+						<li><a href="#" class="hover:text-white transition duration-300">Destek</a></li>
+					</ul>
+				</div>
+				<div>
+					<h4 class="font-semibold mb-4">Destek</h4>
+					<ul class="space-y-2 text-gray-400">
+						<li><a href="#" class="hover:text-white transition duration-300">Yardım Merkezi</a></li>
+						<li><a href="#" class="hover:text-white transition duration-300">Hizmet Ve Şartlar  </a></li>
+						<li><a href="#" class="hover:text-white transition duration-300">Gizlilik Politikası </a></li>
+					</ul>
+				</div>
+				<div>
+					<h4 class="font-semibold mb-4">Bizi Takip Edin</h4>
+					<div class="flex space-x-4">
+						<a href="#" class="text-gray-400 hover:text-white transition duration-300">
+							<i class="fab fa-facebook text-xl"></i>
+						</a>
+						<a href="#" class="text-gray-400 hover:text-white transition duration-300">
+							<i class="fab fa-twitter text-xl"></i>
+						</a>
+						<a href="#" class="text-gray-400 hover:text-white transition duration-300">
+							<i class="fab fa-instagram text-xl"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+				<p>© 2025 LuxStay. Tüm hakları saklıdır.</p>
+			</div>
+		</div>
+	</footer>
+
+	<script>
+
+		// Simple JavaScript for interactive elements
+		document.addEventListener('DOMContentLoaded', function() {
+			// Price range slider
+			const slider = document.querySelector('input[type="range"]');
+			const priceDisplay = document.querySelector('.font-semibold.text-indigo-600');
+
+			slider.addEventListener('input', function() {
+				priceDisplay.textContent = '$' + this.value;
+			});
+
+			// Heart icon toggle
+			const heartIcons = document.querySelectorAll('.fa-heart');
+			heartIcons.forEach(icon => {
+				icon.addEventListener('click', function(e) {
+					e.stopPropagation();
+					this.classList.toggle('text-red-500');
+					this.classList.toggle('text-gray-400');
+				});
+			});
+		});
+
+	</script>
 </body>
 </html>

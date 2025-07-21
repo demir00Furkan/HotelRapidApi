@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HotelRapidApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using static HotelRapidApi.Models.HotelDetailViewModel;
 using static HotelRapidApi.Models.HotelViewModel;
 
 namespace HotelRapidApi.Controllers
@@ -28,7 +29,7 @@ namespace HotelRapidApi.Controllers
             try
             {
                 string destId = null;
-                string childrenAgeString = children > 0 ? "&children_age=" + string.Join("%2C", Enumerable.Repeat("5", children)) : "";
+                
 
                 // 1. Şehirden dest_id al
                 var client = new HttpClient();
@@ -38,7 +39,7 @@ namespace HotelRapidApi.Controllers
                     RequestUri = new Uri($"https://booking-com15.p.rapidapi.com/api/v1/hotels/searchDestination?query={Uri.EscapeDataString(city)}"),
                     Headers =
                     {
-                        { "x-rapidapi-key", "4b0a875cb4mshed6ab714d48a40ep1f44c5jsnd1d6dbede527" },
+                        { "x-rapidapi-key", "910852c028msh86b144cbcbe6312p19fe40jsnee74c5ed8b47" },
                         { "x-rapidapi-host", "booking-com15.p.rapidapi.com" },
                     },
                 };
@@ -58,10 +59,10 @@ namespace HotelRapidApi.Controllers
                     var hotelRequest = new HttpRequestMessage
                     {
                         Method = HttpMethod.Get,
-                        RequestUri = new Uri($"https://booking-com15.p.rapidapi.com/api/v1/hotels/searchHotels?dest_id={destId}&search_type=CITY&arrival_date={dateIn}&departure_date={dateOut}&adults={guest}{childrenAgeString}&units=metric&temperature_unit=c&languagecode=tr&currency_code=TRY"),
+                        RequestUri = new Uri($"https://booking-com15.p.rapidapi.com/api/v1/hotels/searchHotels?dest_id={destId}&search_type=CITY&arrival_date={dateIn}&departure_date={dateOut}&adults={guest}&children_age={children}&units=metric&temperature_unit=c&languagecode=en-us&currency_code=USD&location=US"),
                         Headers =
                         {
-                            { "x-rapidapi-key", "4b0a875cb4mshed6ab714d48a40ep1f44c5jsnd1d6dbede527" },
+                            { "x-rapidapi-key", "910852c028msh86b144cbcbe6312p19fe40jsnee74c5ed8b47" },
                             { "x-rapidapi-host", "booking-com15.p.rapidapi.com" },
                         }
                     };
@@ -73,6 +74,9 @@ namespace HotelRapidApi.Controllers
                         var hotelData = JsonConvert.DeserializeObject<HotelViewModel.Rootobject>(hotelBody);
 
                         hotels = hotelData?.data?.hotels?.ToList() ?? new List<HotelViewModel.Hotel>();
+                        ViewBag.a = guest;
+                        ViewBag.b = children;
+
                     }
                 }
             }
@@ -84,17 +88,19 @@ namespace HotelRapidApi.Controllers
         }
 
 
-        public async Task<IActionResult> HotelDetail(int id, string dateIn, string dateOut, string guest, string children)
+        public async Task<IActionResult> HotelDetail(int id, string dateIn, string dateOut, int guest, int children)
         {
+
+            int roomQuantity = (int)Math.Ceiling((double)guest / 2);
+
             var client = new HttpClient();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://booking-com15.p.rapidapi.com/api/v1/hotels/getHotelDetails?hotel_id={id}&arrival_date=2025-07-18&departure_date=2025-07-25&adults=1&children_age=1%2C17&room_qty=1&units=metric&temperature_unit=c&languagecode=tr&currency_code=TRY"),
-
+                RequestUri = new Uri($"https://booking-com15.p.rapidapi.com/api/v1/hotels/getHotelDetails?hotel_id={id}&arrival_date={dateIn}&departure_date={dateOut}&adults={guest}&children_age={children}&room_qty={roomQuantity}&units=metric&temperature_unit=c&languagecode=tr&currency_code=USD"),
                 Headers =
     {
-        { "x-rapidapi-key", "4b0a875cb4mshed6ab714d48a40ep1f44c5jsnd1d6dbede527" },
+        { "x-rapidapi-key", "910852c028msh86b144cbcbe6312p19fe40jsnee74c5ed8b47" },
         { "x-rapidapi-host", "booking-com15.p.rapidapi.com" },
     },
             };
@@ -105,18 +111,20 @@ namespace HotelRapidApi.Controllers
                 detailResult = JsonConvert.DeserializeObject<HotelDetailViewModel>(body);
 
             }
+           
+            
+            
 
-
-            var request2 = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://booking-com15.p.rapidapi.com/api/v1/hotels/getHotelPhotos?hotel_id={id}"),
-                Headers =
+           var request2 = new HttpRequestMessage
+           {
+               Method = HttpMethod.Get,
+               RequestUri = new Uri($"https://booking-com15.p.rapidapi.com/api/v1/hotels/getHotelPhotos?hotel_id={id}"),
+               Headers =
     {
-        { "x-rapidapi-key", "4b0a875cb4mshed6ab714d48a40ep1f44c5jsnd1d6dbede527" },
+        { "x-rapidapi-key", "910852c028msh86b144cbcbe6312p19fe40jsnee74c5ed8b47" },
         { "x-rapidapi-host", "booking-com15.p.rapidapi.com" },
     },
-            };
+           };
             using (var response = await client.SendAsync(request2))
             {
                 response.EnsureSuccessStatusCode();
@@ -128,8 +136,12 @@ namespace HotelRapidApi.Controllers
             {
                 HotelDetail = detailResult.data,
                 HotelPhotos = photoResult.data.ToList()
+                
 
             };
+            ViewBag.adult = guest;
+            ViewBag.child = children;
+            ViewBag.rquest= request;
             return View(viewModel);
 
 
@@ -141,11 +153,3 @@ namespace HotelRapidApi.Controllers
 
     }
 }
-
-
-
-
-
-
-
-
